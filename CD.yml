@@ -4,21 +4,18 @@ deployTargeEnv: qa
 artifact:
   pkgType: python
   pkgName: devops-monitor
-  pkgVersion: '>1.0.0.dev <1.0.0'
+  pkgVersion: '>=1.0.0.dev0,<=1.0.0'
 
 environments:
   dev:
     kind: azure-vm-python3
     size: Standard_B1s
-    deploy: deploy.sh
     verify: selenium-case-qa ## This is a fake value just to show the idea.
   qa:
     kind: azure-vm-python3
     size: Standard_B1ms
-    deploy: deploy.sh
     verify: selenium-case-qa ## This is a fake value just to show the idea.
   prod:
     kind: azure-vm-python3
     size: Standard_B2s
-    deploy: deploy.sh
     verify: selenium-case-prod ## This is a fake value just to show the idea.
