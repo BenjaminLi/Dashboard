@@ -2,9 +2,9 @@
 deployTargeEnv: qa
 
 artifact:
-  type: python
+  pkgType: python
   pkgName: devops-monitor
-  version:
+  pkgVersion: '>1.0.0.dev <1.0.0'
 
 environments:
   dev:
