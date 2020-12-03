@@ -7,18 +7,18 @@ artifact:
   version:
 
 environments:
-- name: dev
-  kind: azure-vm-python3
-  size: Standard_B1s
-  deploy: deploy.sh
-  verify: selenium-case-qa ## This is a fake value just to show the idea.
-- name: qa
-  kind: azure-vm-python3
-  size: Standard_B1ms
-  deploy: deploy.sh
-  verify: selenium-case-qa ## This is a fake value just to show the idea.
-- name: prod
-  kind: azure-vm-python3
-  size: Standard_B2s
-  deploy: deploy.sh
-  verify: selenium-case-prod ## This is a fake value just to show the idea.
+  dev:
+    kind: azure-vm-python3
+    size: Standard_B1s
+    deploy: deploy.sh
+    verify: selenium-case-qa ## This is a fake value just to show the idea.
+  qa:
+    kind: azure-vm-python3
+    size: Standard_B1ms
+    deploy: deploy.sh
+    verify: selenium-case-qa ## This is a fake value just to show the idea.
+  prod:
+    kind: azure-vm-python3
+    size: Standard_B2s
+    deploy: deploy.sh
+    verify: selenium-case-prod ## This is a fake value just to show the idea.
