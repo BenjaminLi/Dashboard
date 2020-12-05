@@ -18,7 +18,7 @@ pipeline {
      * 自定义环境变量
      */
     environment {
-        GIT_URL       = 'git@github.com:jeffwji/Dashboard.git'
+        GIT_URL       = 'git@github.com:pasuinthesky/Dashboard.git'
         CREDENTIAL    = 'Github'
         BRANCH        = 'develop'
         PYPI_CREDENTIAL = "PypiRepo"
@@ -76,11 +76,13 @@ pipeline {
                  */
                 withPythonEnv("${workspace}/.venv/bin/"){
                     dir("${workspace}") {
-                        sh 'apk add --no-cache py3-qt5 freetype zlib-dev jpeg-dev'
-                        sh 'sed "s/^PyQt5/#PyQt5/" -i requirements.txt'
-                        sh 'pip install wheel nose coverage nosexcover pylint twine pytest'
-                        sh 'pip install -r requirements.txt'
-                        sh 'pip list'
+                        sh '''
+                            apk add --no-cache py3-qt5 freetype zlib-dev jpeg-dev g++ make
+                            sed "s/^PyQt5/#PyQt5/" -i requirements.txt
+                            pip install wheel nose coverage nosexcover pylint twine pytest
+                            pip install -r requirements.txt
+                            pip list
+                        '''
                     }
                 }
             }
@@ -109,11 +111,11 @@ pipeline {
             steps {
                 withPythonEnv("${workspace}/.venv/bin/"){
                     dir("${workspace}") {
-                        script {sonarHome=tool 'SonarQube Scanner'}    // name is defined in `Global Tool Configuration`
+                        script {env.sonarHome=tool 'SonarQube Scanner'}    // name is defined in `Global Tool Configuration`
                         withSonarQubeEnv('MySonarQube') {                      // name is defined in `Configure System`
                             sh 'echo workspace=${sonarHome}'
-                            sh 'sonar-scanner \
-                                -Dsonar.host.url=http://192.168.56.110:9000 \
+                            sh '${sonarHome}/bin/sonar-scanner \
+                                -Dsonar.host.url=http://sonarqube:9000 \
                                 -Dsonar.projectKey=Dashboard \
                                 -Dsonar.projectVersion=1.0 \
                                 -Dsonar.language=py \
@@ -146,8 +148,7 @@ pipeline {
                 withPythonEnv("${workspace}/.venv/bin/"){
                     dir("${workspace}") {
                         sh 'sed "s/^#PyQt5/PyQt5/" -i requirements.txt'
-                        sh 'sed "Nd" -i requirements.txt'
-                        sh 'sed "Nd" -i requirements.txt'
+                        sh 'sed -i "1,2d" requirements.txt'
                         sh 'python setup.py egg_info -b.dev$(date "+%s") bdist_wheel'
                     }
                 }
@@ -158,10 +159,10 @@ pipeline {
          * Pushing to Nexus
          *
          * Run the following commands on client:
-         *   pip config set global.index http://192.168.10.65:8081/repository/pypi-central/simple/
-         *   pip config set global.index-url http://192.168.10.65:8081/repository/pypi-central/simple/
-         *   pip config set global.trusted-host 192.168.10.65
-         *   pip config set global.extra-index-url http://192.168.10.65:8081/repository/pypi/simple/
+         *   pip config set global.index http://nexus:8081/repository/pypi-central/pypi
+         *   pip config set global.index-url http://nexus:8081/repository/pypi-central/simple
+         *   pip config set global.trusted-host nexus
+         *   pip config set global.extra-index-url http://nexus:8081/repository/pypi/simple
          */
         stage('Pushing to Repository') {
             steps {
@@ -175,7 +176,7 @@ pipeline {
         internal_pypi
 
 [internal_pypi]
-    repository: http://192.168.56.110:8081/repository/pypi/
+    repository: http://nexus:8081/repository/pypi/
     username: ${user}
     password: ${pass}
 EOF'''
